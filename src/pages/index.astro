@@ -1,0 +1,93 @@
+---
+import '../styles/global.css';
+import { profile } from '../data/profile';
+
+const github = /^https:\/\/github\.com\//i.test(profile.github) ? profile.github : '';
+const hasContact = Boolean(profile.email || github);
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={profile.intro} />
+    <meta name="theme-color" content="#f5f7f2" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${profile.name} · 个人主页`} />
+    <meta property="og:description" content={profile.intro} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
+    <title>{profile.name} · 个人主页</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳转到正文</a>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="返回首页">{profile.name}<span>.</span></a>
+      <nav aria-label="主导航">
+        <a href="#about">关于我</a>
+        <a href="#work">我的分享</a>
+        <a href="#contact">打个招呼 <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <main id="main">
+      <section class="hero section-shell" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> 一个属于我的小角落</p>
+          <h1 id="hero-title">{profile.headline.split('\n').map((line) => <span>{line}</span>)}</h1>
+          <p class="hero-intro">{profile.intro}</p>
+          <a class="arrow-link" href="#about">认识一下 <span aria-hidden="true">↘</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="monogram">{profile.initials}<span>HELLO, WORLD.</span></div>
+          <span class="art-note">始终保持好奇</span><span class="art-star">✳</span>
+        </div>
+        <div class="hero-footer"><p>{profile.role}</p><p>{profile.location || '欢迎来访，慢慢看看。'}</p></div>
+      </section>
+      <section class="about section-shell" id="about" aria-labelledby="about-title">
+        <h2 class="section-label" id="about-title"><span>01 /</span> 关于我</h2>
+        <div class="about-copy">
+          <p class="lead">你好，我是{profile.name}。<br />{profile.about}</p>
+          <p class="muted bio">{profile.bio}</p>
+          <div class="facts">
+            <div><span>感兴趣的事情</span><div class="interest-tags">{profile.interests.map((interest) => <span>{interest}</span>)}</div></div>
+            <div><span>最近的状态</span><p>{profile.now}</p></div>
+          </div>
+        </div>
+      </section>
+      <section class="work section-shell" id="work" aria-labelledby="work-title">
+        <div class="section-heading">
+          <h2 class="section-label" id="work-title"><span>02 /</span> 我的分享</h2>
+          <p class="muted">学习、生活，以及一些小小的创造。</p>
+        </div>
+        <div class="project-list">
+          {profile.projects.map((project, i) => {
+            const Tag = /^https?:\/\//i.test(project.link) ? 'a' : 'article';
+            return (
+              <Tag class={`project-card ${Tag === 'a' ? 'is-linked' : ''}`} href={Tag === 'a' ? project.link : undefined}>
+                <span class="project-number">{String(i + 1).padStart(2, '0')}</span>
+                <div class="project-main">
+                  <h3>{project.title}{Tag === 'a' && <span aria-hidden="true">↗</span>}</h3>
+                  <p class="muted">{project.description}</p>
+                  <div class="tags"><span>{project.tag}</span></div>
+                </div>
+              </Tag>
+            );
+          })}
+        </div>
+      </section>
+      <section class="contact section-shell" id="contact" aria-labelledby="contact-title">
+        <p class="eyebrow">03 / 打个招呼</p>
+        <h2 id="contact-title">很高兴，<br />在这里遇见你。</h2>
+        <p class="muted">{hasContact ? '如果你也有相似的兴趣，欢迎交流。' : '谢谢你来看看我的世界，愿我们都能找到自己喜欢的事。'}</p>
+        {profile.email && <a class="contact-link" href={`mailto:${profile.email}`}>{profile.email} <span aria-hidden="true">↗</span></a>}
+        <div class="socials">
+          {github && <a href={github}>GitHub ↗</a>}
+          <a href="#top">回到顶部 ↑</a>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer section-shell"><span>© {new Date().getFullYear()} {profile.name}</span><span>保持好奇，持续生长。</span></footer>
+  </body>
+</html>
