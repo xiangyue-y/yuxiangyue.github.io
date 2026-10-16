@@ -2,92 +2,145 @@
 import '../styles/global.css';
 import { profile } from '../data/profile';
 
-const github = /^https:\/\/github\.com\//i.test(profile.github) ? profile.github : '';
-const hasContact = Boolean(profile.email || github);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const asset = (path: string) => path.startsWith('/') ? `${base}${path}` : path;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const nav = [
+  { href: '#about', label: '关于我' },
+  { href: '#research', label: '研究方向' },
+  { href: '#publications', label: '论文与项目' },
+  { href: '#experience', label: '经历' },
+  { href: '#contact', label: '联系方式' }
+];
 ---
 <!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={profile.intro} />
-    <meta name="theme-color" content="#f5f7f2" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={`${profile.name} · 个人主页`} />
-    <meta property="og:description" content={profile.intro} />
+    <meta name="description" content={profile.bio} />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={`${profile.displayName} · ${profile.title}`} />
+    <meta property="og:description" content={profile.bio} />
     {canonical && <link rel="canonical" href={canonical} />}
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
-    <title>{profile.name} · 个人主页</title>
+    <link rel="icon" type="image/svg+xml" href={asset('/favicon.svg')} />
+    <title>{profile.displayName} · {profile.title}</title>
   </head>
-  <body>
+  <body id="top">
     <a class="skip-link" href="#main">跳转到正文</a>
-    <header class="site-header">
-      <a class="brand" href="#top" aria-label="返回首页">{profile.name}<span>.</span></a>
-      <nav aria-label="主导航">
-        <a href="#about">关于我</a>
-        <a href="#work">我的分享</a>
-        <a href="#contact">打个招呼 <span aria-hidden="true">↗</span></a>
-      </nav>
+    <header class="masthead">
+      <div class="masthead-inner">
+        <a class="site-title" href="#top">{profile.displayName}</a>
+        <nav class="top-nav" aria-label="主导航">
+          {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+        <details class="mobile-nav">
+          <summary aria-label="栏目导航">栏目 <span aria-hidden="true">☰</span></summary>
+          <nav aria-label="移动端导航">{nav.map((item) => <a href={item.href}>{item.label}</a>)}</nav>
+        </details>
+      </div>
     </header>
-    <main id="main">
-      <section class="hero section-shell" id="top" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> 一个属于我的小角落</p>
-          <h1 id="hero-title">{profile.headline.split('\n').map((line) => <span>{line}</span>)}</h1>
-          <p class="hero-intro">{profile.intro}</p>
-          <a class="arrow-link" href="#about">认识一下 <span aria-hidden="true">↘</span></a>
-        </div>
-        <div class="hero-art" aria-hidden="true">
-          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-          <div class="monogram">{profile.initials}<span>HELLO, WORLD.</span></div>
-          <span class="art-note">始终保持好奇</span><span class="art-star">✳</span>
-        </div>
-        <div class="hero-footer"><p>{profile.role}</p><p>{profile.location || '欢迎来访，慢慢看看。'}</p></div>
-      </section>
-      <section class="about section-shell" id="about" aria-labelledby="about-title">
-        <h2 class="section-label" id="about-title"><span>01 /</span> 关于我</h2>
-        <div class="about-copy">
-          <p class="lead">你好，我是{profile.name}。<br />{profile.about}</p>
-          <p class="muted bio">{profile.bio}</p>
-          <div class="facts">
-            <div><span>感兴趣的事情</span><div class="interest-tags">{profile.interests.map((interest) => <span>{interest}</span>)}</div></div>
-            <div><span>最近的状态</span><p>{profile.now}</p></div>
+
+    <main id="main" class="page-shell">
+      <aside class="sidebar" aria-label="个人信息">
+        <div class="profile-card">
+          {profile.avatar ? (
+            <img class="avatar" src={asset(profile.avatar)} alt={`${profile.displayName}的头像`} />
+          ) : (
+            <div class="avatar avatar-placeholder" aria-hidden="true">{profile.initials}</div>
+          )}
+          <h1>{profile.displayName}</h1>
+          <p class="sidebar-title">{profile.title}</p>
+          <p class="sidebar-bio">{profile.bio}</p>
+          <ul class="contact-list">
+            {profile.location && <li><span class="icon">⌖</span>{profile.location}</li>}
+            {profile.affiliation && <li><span class="icon">▣</span>{profile.affiliation}</li>}
+            {profile.email && <li><span class="icon">✉</span><a href={`mailto:${profile.email}`}>{profile.email}</a></li>}
+          </ul>
+          <div class="sidebar-links">
+            {profile.github && <a href={profile.github} rel="noreferrer">GitHub <span>↗</span></a>}
+            {profile.scholar && <a href={profile.scholar} rel="noreferrer">Google Scholar <span>↗</span></a>}
+            {profile.orcid && <a href={profile.orcid} rel="noreferrer">ORCID <span>↗</span></a>}
+            {profile.linkedin && <a href={profile.linkedin} rel="noreferrer">LinkedIn <span>↗</span></a>}
+            {profile.cv && <a href={asset(profile.cv)}>简历 / CV <span>↗</span></a>}
           </div>
         </div>
-      </section>
-      <section class="work section-shell" id="work" aria-labelledby="work-title">
-        <div class="section-heading">
-          <h2 class="section-label" id="work-title"><span>02 /</span> 我的分享</h2>
-          <p class="muted">学习、生活，以及一些小小的创造。</p>
-        </div>
-        <div class="project-list">
-          {profile.projects.map((project, i) => {
-            const Tag = /^https?:\/\//i.test(project.link) ? 'a' : 'article';
-            return (
-              <Tag class={`project-card ${Tag === 'a' ? 'is-linked' : ''}`} href={Tag === 'a' ? project.link : undefined}>
-                <span class="project-number">{String(i + 1).padStart(2, '0')}</span>
-                <div class="project-main">
-                  <h3>{project.title}{Tag === 'a' && <span aria-hidden="true">↗</span>}</h3>
-                  <p class="muted">{project.description}</p>
-                  <div class="tags"><span>{project.tag}</span></div>
+      </aside>
+
+      <div class="content-column">
+        <section id="about" class="content-section intro-section" aria-labelledby="about-title">
+          <p class="kicker">欢迎来到我的个人主页</p>
+          <h2 id="about-title">关于我</h2>
+          {profile.about.map((paragraph) => <p>{paragraph}</p>)}
+        </section>
+
+        <section id="research" class="content-section" aria-labelledby="research-title">
+          <div class="section-heading"><span class="section-index">01</span><h2 id="research-title">研究方向</h2></div>
+          <div class="research-grid">
+            {profile.research.map((item) => (
+              <article class="research-item">
+                <h3>{item.title}</h3>
+                <p class="research-subtitle" lang="en">{item.subtitle}</p>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="publications" class="content-section" aria-labelledby="publications-title">
+          <div class="section-heading"><span class="section-index">02</span><h2 id="publications-title">论文与项目</h2></div>
+          <div class="publication-list">
+            {profile.publications.length === 0 && <p class="empty-state">相关论文与项目将在这里更新。</p>}
+            {profile.publications.map((item) => (
+              <article class="publication-item">
+                <div class="publication-year">{item.year}</div>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p class="authors">{item.authors}</p>
+                  <p class="venue">{item.venue}</p>
+                  <p class="description">{item.description}</p>
+                  <div class="resource-links">
+                    {item.pdf && <a href={asset(item.pdf)}>PDF ↗</a>}
+                    {item.code && <a href={item.code} rel="noreferrer">Code ↗</a>}
+                  </div>
                 </div>
-              </Tag>
-            );
-          })}
-        </div>
-      </section>
-      <section class="contact section-shell" id="contact" aria-labelledby="contact-title">
-        <p class="eyebrow">03 / 打个招呼</p>
-        <h2 id="contact-title">很高兴，<br />在这里遇见你。</h2>
-        <p class="muted">{hasContact ? '如果你也有相似的兴趣，欢迎交流。' : '谢谢你来看看我的世界，愿我们都能找到自己喜欢的事。'}</p>
-        {profile.email && <a class="contact-link" href={`mailto:${profile.email}`}>{profile.email} <span aria-hidden="true">↗</span></a>}
-        <div class="socials">
-          {github && <a href={github}>GitHub ↗</a>}
-          <a href="#top">回到顶部 ↑</a>
-        </div>
-      </section>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="experience" class="content-section" aria-labelledby="experience-title">
+          <div class="section-heading"><span class="section-index">03</span><h2 id="experience-title">经历</h2></div>
+          {profile.experience.length > 0 && <div class="timeline">
+            {profile.experience.map((item) => (
+              <article class="timeline-item">
+                <div class="timeline-period">{item.period}</div>
+                <div><h3>{item.role}</h3><p class="organization">{item.organization}</p><p>{item.description}</p></div>
+              </article>
+            ))}
+          </div>}
+          <div class="education">
+            <h3 class="subheading">教育背景</h3>
+            {profile.education.map((item) => <div class="education-row">{item.period && <span>{item.period}</span>}{item.degree && <strong>{item.degree}</strong>}<em>{item.organization}</em></div>)}
+          </div>
+        </section>
+
+        {profile.news.length > 0 && <section class="content-section news-section" aria-labelledby="news-title">
+          <div class="section-heading"><span class="section-index">04</span><h2 id="news-title">最新动态</h2></div>
+          <ul class="news-list">
+            {profile.news.map((item) => <li><time>{item.date}</time><span>{item.text}</span></li>)}
+          </ul>
+        </section>}
+
+        <section id="contact" class="content-section contact-section" aria-labelledby="contact-title">
+          <h2 id="contact-title">联系我</h2>
+          <p>欢迎交流研究、项目与合作想法。</p>
+          {profile.email ? <a class="email-link" href={`mailto:${profile.email}`}>{profile.email} ↗</a> : profile.github ? <a class="email-link" href={profile.github}>通过 GitHub 联系 ↗</a> : <p class="muted-note">联系方式待补充。</p>}
+        </section>
+
+        <footer class="site-footer"><span>© {new Date().getFullYear()} {profile.displayName}</span><span>Built with Astro · Inspired by <a href="https://academicpages.github.io/">Academic Pages</a></span></footer>
+      </div>
     </main>
-    <footer class="site-footer section-shell"><span>© {new Date().getFullYear()} {profile.name}</span><span>保持好奇，持续生长。</span></footer>
   </body>
 </html>
