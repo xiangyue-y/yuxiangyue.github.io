@@ -1,13 +1,13 @@
-// 个人资料都集中在这里，之后主要修改这一个文件即可。
+// Edit this file to update your personal information and academic content.
 export const profile = {
-  name: '于祥粤',
-  displayName: '于祥粤',
-  title: '个人学术主页',
-  initials: 'YX',
-  avatar: '', // 可填入 /avatar.jpg；留空时使用姓名缩写占位图
-  bio: '模仿学习 / VLA',
+  name: 'Xiangyue Yu',
+  displayName: 'Xiangyue Yu',
+  title: 'Academic Homepage',
+  initials: 'XY',
+  avatar: '', // e.g. /avatar.jpg; leave blank to display initials
+  bio: 'Imitation Learning / VLA',
   location: '',
-  affiliation: '西安电子科技大学',
+  affiliation: 'Xidian University',
   email: '',
   github: 'https://github.com/xiangyue-y',
   scholar: '',
@@ -15,17 +15,17 @@ export const profile = {
   linkedin: '',
   cv: '',
   about: [
-    '你好，我是于祥粤，来自西安电子科技大学。我的研究兴趣包括模仿学习（Imitation Learning）与视觉—语言—动作模型（Vision-Language-Action，VLA）。',
-    '这里分享我的研究兴趣与后续进展。欢迎就相关研究与项目交流。'
+    'Hello, I am Xiangyue Yu from Xidian University. My research interests include imitation learning and vision-language-action (VLA) models.',
+    'I share my research interests and updates here. Feel free to reach out to discuss related research and projects.'
   ],
   research: [
-    { title: '模仿学习', subtitle: 'Imitation Learning', description: '从示范中学习行为策略，连接观察、决策与动作。' },
-    { title: '视觉—语言—动作模型', subtitle: 'Vision-Language-Action', description: '连接视觉感知、语言理解与动作生成。' }
+    { title: 'Imitation Learning', subtitle: 'Learning from Demonstrations', description: 'Learning behavior policies from demonstrations, connecting observation, decision-making, and action.' },
+    { title: 'Vision-Language-Action', subtitle: 'VLA Models', description: 'Connecting visual perception, language understanding, and action generation.' }
   ],
   publications: [] as { year: string; title: string; authors: string; venue: string; description: string; pdf: string; code: string }[],
   experience: [] as { period: string; role: string; organization: string; description: string }[],
   education: [
-    { period: '', degree: '', organization: '西安电子科技大学' }
+    { period: '', degree: '', organization: 'Xidian University' }
   ],
   news: [] as { date: string; text: string }[]
 };
